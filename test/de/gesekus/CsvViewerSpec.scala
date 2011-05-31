@@ -16,21 +16,36 @@ class CsvViewerSpec extends Spec with ShouldMatchers {
       }
     }
     describe("when created with empty model") {
-      val model = Nil
+      val model = Array[List[String]]()
       it("should throw an exception") {
         evaluating { new CsvViewer(model) } should produce[IllegalArgumentException]
       }
     }
     describe("when created with only a header line") {
-      val model = Array("Test1", "Test2") :: Nil
+      val model = Array(List("Test1","Test2"))
       val csvView = new CsvViewer(model)
 
       it("should return a page with only a header and menubar") {
-        csvView.screen should be(
+        csvView.screen(1,20) should be(
           "Test1|Test2|\n" +
             "-----+-----+\n" +
             "\n" +
-            "N(ext page, P(revious page, F(irst page, L(ast page, eX(it")
+            "N(ext page, P(revious page, F(irst page, L(ast page, eX(it\n")
+      }
+    }
+    
+    describe("when created with header line") {
+      val model = Array(List("Head1","Head2"), List("Body11   ","Body12  "))
+      val csvView = new CsvViewer(model)
+
+      it("should return a page with only a header and menubar") {
+        csvView.screen(1,1) should be(
+"""Head1    |Head2   |
+---------+--------+
+Body11   |Body12  |
+
+N(ext page, P(revious page, F(irst page, L(ast page, eX(it
+""")
       }
     }
   }
