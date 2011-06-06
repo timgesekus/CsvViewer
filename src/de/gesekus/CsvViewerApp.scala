@@ -1,32 +1,41 @@
 package de.gesekus
 import scala.io.Source
+
 class CsvViewerApp(fileName: String, pageSize: Int) {
   private val fileSource = Source.fromFile(fileName)
   private val csvReader = new CsvReader
   private val model = csvReader.parse(fileSource)
-  private val csvViewer = new CsvViewer(model)
+  private val csvViewer = new CsvPageViewer(model)
   private var theCursorPosition = 1
 
   def cursorPosition_=(newPosition: Int) = {
     println ("newpos:" + newPosition)
     println ("Curpos:" + theCursorPosition)
-    theCursorPosition = newPosition.min(model.size-2-pageSize)
+    theCursorPosition = newPosition.min(lastPageStartPosition)
     println ("Curpos:" + theCursorPosition)
     theCursorPosition = 1.max(cursorPosition)
     println ("Curpos:" + theCursorPosition)
   }
   def cursorPosition = theCursorPosition
 
-  def endPagePosition() = {
-    (model.size - 2).min(cursorPosition + pageSize)
+  def maximumCursorPosition = {
+    (model.size - 1)
+  }
+  
+  def minimumCursorPosition = {
+    1
+  }
+  
+  def endPagePosition = {
+    maximumCursorPosition.min(cursorPosition + pageSize + 1)
   }
   
   def printPage {
-    println(csvViewer.screen(cursorPosition, endPagePosition))
+    println(csvViewer.page(cursorPosition, endPagePosition))
   }
   
-  def endPosition = {
-    model.size-2
+  def lastPageStartPosition = {
+    maximumCursorPosition - pageSize - 1 
   }
   def run {
     var doExit = false
@@ -35,8 +44,8 @@ class CsvViewerApp(fileName: String, pageSize: Int) {
       readChar match {
         case 'n' => cursorPosition += pageSize
         case 'p' => cursorPosition -= pageSize
-        case 'f' => cursorPosition = 1
-        case 'l' => cursorPosition = endPosition
+        case 'f' => cursorPosition = minimumCursorPosition
+        case 'l' => cursorPosition = lastPageStartPosition
         case 'x' => doExit = true
         case _ =>
       }
