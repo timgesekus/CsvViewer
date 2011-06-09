@@ -6,15 +6,17 @@ import scala.io.Source
  * @author Tim
  *
  */
-class CsvReader {
+class Reader {
 	/**
 	 * Parse the given source
 	 * @param source the source to parse
 	 * @return the parsed source
 	 */
-	def parse(source: Source) : Array[List[String]] = {
-	  val splittedLines = for (line <- source.getLines()) 
-	   yield line.split(";").toList
-	  splittedLines.toArray
+	def parse(source: Source) : Model = {
+	  var model = Model()
+	  for (line <- source.getLines()) {
+	   model.addLine(line.split(";").toList)
+	  }
+	  model
 	}
 }
