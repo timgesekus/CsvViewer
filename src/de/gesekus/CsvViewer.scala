@@ -3,49 +3,52 @@ import scala.io.Source
 
 class CsvViewer(fileName: String, pageSize: Int) {
   private val fileSource = Source.fromFile(fileName)
-  private val csvReader = new Reader
-  private val model = csvReader.parse(fileSource)
-  private val csvViewer = new PageRenderer(model)
-  private var theCursorPosition = 0
+  private val model = new DefaultModel() with LineNumbers
+  private val csvReader = new Reader(model)
+  csvReader.parse(fileSource)
+  private val pageRenderer = new PageRenderer(model, pageSize)
+  private var theCurrentPageNumber = 1
 
-  def cursorPosition_=(newPosition: Int) = {
-    println ("newpos:" + newPosition)
-    println ("Curpos:" + theCursorPosition)
-    theCursorPosition = newPosition.min(lastPageStartPosition)
-    println ("Curpos:" + theCursorPosition)
-    theCursorPosition = minimumCursorPosition.max(cursorPosition)
-    println ("Curpos:" + theCursorPosition)
-  }
-  def cursorPosition = theCursorPosition
+  def highestPageNumber = pageRenderer.numberOfPages
 
-  def maximumCursorPosition = {
-    (model.size)
+  def lowestPageNumber = 1
+
+  def currentPageNumber_=(pageNumber: Int) {
+    theCurrentPageNumber = highestPageNumber.min(pageNumber)
+    theCurrentPageNumber = lowestPageNumber.max(theCurrentPageNumber)
   }
-  
-  def minimumCursorPosition = {
-    0
-  }
-  
-  def endPagePosition = {
-    maximumCursorPosition.min(cursorPosition + pageSize - 1)
-  }
-  
+
+  def currentPageNumber = theCurrentPageNumber
+
   def printPage {
-    println(csvViewer.page(cursorPosition, endPagePosition))
+    println(pageRenderer.page(currentPageNumber))
+  }
+
+  def jumpToPage {
+    println ("Enter page number:")
+    val pageNumber = readInt 
+    if (isValidPageNumber(pageNumber)) {
+      currentPageNumber = pageNumber
+    }
   }
   
-  def lastPageStartPosition = {
-    maximumCursorPosition - pageSize  
+  def isValidPageNumber(pageNumber : Int) = {
+    if (pageNumber >= lowestPageNumber && pageNumber <= highestPageNumber) {
+      true
+    } else {
+      false
+    }
   }
   def run {
     var doExit = false
     while (!doExit) {
       printPage
       readChar match {
-        case 'n' => cursorPosition += pageSize
-        case 'p' => cursorPosition -= pageSize
-        case 'f' => cursorPosition = minimumCursorPosition
-        case 'l' => cursorPosition = lastPageStartPosition
+        case 'n' => currentPageNumber = currentPageNumber + 1
+        case 'p' => currentPageNumber = currentPageNumber - 1
+        case 'f' => currentPageNumber = lowestPageNumber
+        case 'l' => currentPageNumber = highestPageNumber
+        case 'j' => jumpToPage
         case 'x' => doExit = true
         case _ =>
       }

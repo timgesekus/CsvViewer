@@ -6,10 +6,9 @@ package de.gesekus
  * @author Tim
  *
  */
-class PageRenderer(model: Model)
- {
+class PageRenderer(model: DefaultModel, pageSize : Int) {
   require(model != null)
-  require( ! model.isEmpty)
+  require(!model.isEmpty)
 
   /**
    * Pads the given line to the correct width
@@ -18,7 +17,10 @@ class PageRenderer(model: Model)
    */
   def padLine(line: List[String]) = {
     for (i <- 0 to numColumns - 1)
-      yield line(i).padTo(model.columnWidths()(i), " ").mkString
+      yield ({
+      val collumWidth = model.columnWidths()(i)
+      line(i).padTo(collumWidth, " ").mkString
+    })
   }
 
   /**
@@ -36,7 +38,6 @@ class PageRenderer(model: Model)
   def numColumns = {
     model.numberOfColumns
   }
-
 
   /**
    * @return the header of the page
@@ -60,7 +61,9 @@ class PageRenderer(model: Model)
    * @param toLineNumber the line number to end
    * @return the body of a page
    */
-  def body(fromLineNumber: Int, toLineNumber: Int): String = {
+  def body(pageNumber : Int): String = {
+    val fromLineNumber = (pageNumber  - 1) * pageSize 
+    val toLineNumber = fromLineNumber + pageSize -1 
     val lines = for (i <- fromLineNumber to toLineNumber)
       yield (padAndSeperateLine(model.body(i)))
     lines.mkString("\n")
@@ -70,19 +73,25 @@ class PageRenderer(model: Model)
    * @return the footer
    */
   def footer = {
-    "N(ext page, P(revious page, F(irst page, L(ast page, eX(it\n"
+    "N(ext page, P(revious page, F(irst page, L(ast page, J(ump to page eX(it\n"
   }
 
+  def pageCounter(pageNumber: Int) : String = {
+    "Page " + pageNumber + " of " + numberOfPages + "\n"
+  }
   /**
-   * Returns a page
-   * @param fromLineNumber the line number to begin with
-   * @param toLineNumber the line number to end
+   * Returns a page identified by it's number
+   * @param pageNumber the page to render
    * @return a page
    */
-  def page(fromLineNumber: Int, toLineNumber: Int): String = {
-    require(fromLineNumber < model.size )
-    require(toLineNumber < model.size)
+  def page(pageNumber: Int): String = {
+    require(pageNumber > 0)
+    require(pageNumber <= numberOfPages)
 
-    header + seperator + body(fromLineNumber, toLineNumber) + "\n" + footer
+    header + seperator + body(pageNumber) + "\n" + pageCounter(pageNumber) + "\n" +  footer
+  }
+  
+  def numberOfPages = {
+    model.size / pageSize
   }
 }

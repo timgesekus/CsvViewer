@@ -6,17 +6,15 @@ import scala.io.Source
  * @author Tim
  *
  */
-class Reader {
+class Reader (model : Model) {
 	/**
 	 * Parse the given source
 	 * @param source the source to parse
 	 * @return the parsed source
 	 */
-	def parse(source: Source) : Model = {
-	  var model = Model()
+	def parse(source: Source)  {
 	  for (line <- source.getLines()) {
 	   model.addLine(line.split(";").toList)
 	  }
-	  model
 	}
 }

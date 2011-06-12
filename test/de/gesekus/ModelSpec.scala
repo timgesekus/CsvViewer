@@ -11,7 +11,7 @@ import scala.io.Source
 class ModelSpec extends Spec with ShouldMatchers {
   describe("A model") {
     describe("when created") {
-      val model = Model()
+      val model = DefaultModel()
       it("should be empty") {
         model.isEmpty should be(true)
       }
@@ -28,7 +28,7 @@ class ModelSpec extends Spec with ShouldMatchers {
     }
 
     describe("when filled with a header") {
-      val model = Model()
+      val model = DefaultModel()
       val header = List("A", "B")
       model.addLine(header)
       it("should have a size of 0") {
@@ -44,7 +44,7 @@ class ModelSpec extends Spec with ShouldMatchers {
     }
 
     describe("when filled with a header and body") {
-      val model = Model()
+      val model = DefaultModel()
       val header = List("A", "B")
       val bodyLine1 = List("Body11","Body12")
       val bodyLine2 = List("Body21","Body22", "Body23")

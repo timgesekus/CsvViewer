@@ -13,21 +13,23 @@ class CsvReaderSpec extends Spec with ShouldMatchers {
 
     describe("(when parsing an empty file)") {
 
-      val csvReader = new Reader
+      val model = new DefaultModel
+      val csvReader = new Reader(model)
 
       it("should yield an empty list") {
         val s = Source.fromChars("".toCharArray)
-        val model = csvReader.parse(s)
+        csvReader.parse(s)
         assert(model.isEmpty)
       }
     }
 
     describe("when parsing three lines") {
 
-      val csvReader = new Reader
-      val file = "Header11;Header12\nTest21;Test22\nTest31;Test32\n"
+      val model = new DefaultModel
+      val csvReader = new Reader(model)
+     val file = "Header11;Header12\nTest21;Test22\nTest31;Test32\n"
       val s = Source.fromChars(file.toCharArray)
-      val model = csvReader.parse(s)
+      csvReader.parse(s)
 
       it("should yield a list with 3 elements") {
 
