@@ -4,7 +4,7 @@ import scala.io.Source
 class CsvViewer(fileName: String, pageSize: Int) {
   private val fileSource = Source.fromFile(fileName)
   private val model = new DefaultModel() with LineNumbers
-  private val csvReader = new Reader(model)
+  private val csvReader = new DefaultModelReader(model)
   csvReader.parse(fileSource)
   private val pageRenderer = new PageRenderer(model, pageSize)
   private var theCurrentPageNumber = 1

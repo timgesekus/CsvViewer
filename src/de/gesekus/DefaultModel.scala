@@ -1,32 +1,29 @@
 package de.gesekus
 import scala.collection.mutable.ArrayBuffer
 
-class DefaultModel extends Model {
-
+class DefaultModel() extends Model {
   var theHeader: Line = null
   var theBody = new ArrayBuffer[Line]()
+  var theColumnWidths: Array[Int] = null
 
   /**
    * returns the size of the model
    * @return the size of the model
    */
-  def size = theBody.size
+  def size = {
+    ModelSize(theBody.size,false)
+  }
 
   def body(index: Int): Line = {
-    require(index < body.size)
-    body()(index)
-  }
-  
-  def body: Array[Line] = {
-    theBody.toArray
+    require(index < theBody.size)
+    theBody(index)
   }
 
   def addLine(line: Line) {
-    if (theHeader == null) {
-      theHeader = line
-    } else {
-      theBody += line
-    }
+    require(theHeader != null)
+    require(line.size <= header.size)
+    theBody += line
+    adjustColumnWidths(line)
   }
 
   def header = {
@@ -34,39 +31,42 @@ class DefaultModel extends Model {
     theHeader
   }
 
+  def header(header: Line) {
+    require(theHeader == null)
+    theHeader = header
+    theColumnWidths = new Array[Int](theHeader.size)
+    adjustColumnWidths(header)
+  }
+
   def numberOfColumns = {
-    val numberOfColumnsBody = body.foldLeft(0)((a, b) => a.max(b.size))
-    val numberOfColumnsHeader = if (header == null) 0 else header.size
-    numberOfColumnsHeader.max(numberOfColumnsBody)
+    require(header != null)
+    header.size
   }
 
   def isEmpty = {
-    if (header == null) {
+    if (theHeader == null) {
       true
     } else {
       false
     }
   }
 
+  def adjustColumnWidths(line: Line) {
+    var i = 0
+    for (column <- line) ({
+      theColumnWidths(i) = theColumnWidths(i).max(column.size)
+      i += 1
+    })
+  }
   /**
    * @return the widths of the columns
    */
-  def columnWidths(): Array[Int] = {
-    def maximumValue(sizeList: List[Int]) = {
-      sizeList.foldLeft(0)((a, b) => a.max(b))
-    }
-    val columnWidths = for (i <- 0 to numberOfColumns - 1)
-      yield ({
-      val sizeList = (header ::  body.toList).map(_(i).size)
-      maximumValue(sizeList)
-    })
-    columnWidths.toArray
-  }
+  def columnWidths(): Array[Int] = theColumnWidths
 
 }
 
 object DefaultModel {
   def apply() = {
-    new DefaultModel
+    new DefaultModel()
   }
 }

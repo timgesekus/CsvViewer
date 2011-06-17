@@ -7,14 +7,14 @@ import org.scalatest.junit.JUnitRunner
 import scala.io.Source
 
 @RunWith(classOf[JUnitRunner])
-class CsvReaderSpec extends Spec with ShouldMatchers {
+class DefaultModelReaderSpec extends Spec with ShouldMatchers {
 
   describe("A CsvReader") {
 
     describe("(when parsing an empty file)") {
 
       val model = new DefaultModel
-      val csvReader = new Reader(model)
+      val csvReader = new DefaultModelReader(model)
 
       it("should yield an empty list") {
         val s = Source.fromChars("".toCharArray)
@@ -26,7 +26,7 @@ class CsvReaderSpec extends Spec with ShouldMatchers {
     describe("when parsing three lines") {
 
       val model = new DefaultModel
-      val csvReader = new Reader(model)
+      val csvReader = new DefaultModelReader(model)
      val file = "Header11;Header12\nTest21;Test22\nTest31;Test32\n"
       val s = Source.fromChars(file.toCharArray)
       csvReader.parse(s)
@@ -36,9 +36,13 @@ class CsvReaderSpec extends Spec with ShouldMatchers {
         model.size should be(2)
       }
 
-      it("should have the right contents in the first element") {
+      it("should have the right contents in the body") {
         model.body(0) should be(List("Test21", "Test22"))
         model.body(1) should be(List("Test31", "Test32"))
+      }
+      
+      it("should have the right header") {
+        model.header should be(List("Header11","Header12"))
       }
     }
   }

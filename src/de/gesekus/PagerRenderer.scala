@@ -77,7 +77,7 @@ class PageRenderer(model: DefaultModel, pageSize : Int) {
   }
 
   def pageCounter(pageNumber: Int) : String = {
-    "Page " + pageNumber + " of " + numberOfPages + "\n"
+    "Page " + pageNumber + " of " + numberOfPages +  pageSizeFinalString  + "\n"
   }
   /**
    * Returns a page identified by it's number
@@ -92,6 +92,14 @@ class PageRenderer(model: DefaultModel, pageSize : Int) {
   }
   
   def numberOfPages = {
-    model.size / pageSize
+    model.size.size / pageSize
+  }
+  
+  def pageSizeFinalString () = {
+    if (model.size.isFinalSize) {
+      " "
+    } else {
+      "?"
+    }
   }
 }
