@@ -21,7 +21,7 @@ class CsvViewer(fileName: String, pageSize: Int) {
   def currentPageNumber = theCurrentPageNumber
 
   def printPage {
-    println(pageRenderer.page(currentPageNumber))
+    println(pageRenderer.renderPage(currentPageNumber))
   }
 
   def jumpToPage {

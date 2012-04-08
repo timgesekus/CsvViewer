@@ -84,7 +84,7 @@ class PageRenderer(model: DefaultModel, pageSize : Int) {
    * @param pageNumber the page to render
    * @return a page
    */
-  def page(pageNumber: Int): String = {
+  def renderPage(pageNumber: Int): String = {
     require(pageNumber > 0)
     require(pageNumber <= numberOfPages)
 

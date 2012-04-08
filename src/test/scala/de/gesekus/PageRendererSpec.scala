@@ -28,7 +28,7 @@ class PageRendererSpec extends Spec with ShouldMatchers {
       val csvView = new PageRenderer(model, 5)
 
       it("should return a page with only a header and menubar") {
-        csvView.page(0) should be(
+        csvView.renderPage(0) should be(
 """Head1    |Head2   |
 ---------+--------+
 Body11   |Body12  |
